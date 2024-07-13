@@ -1,5 +1,7 @@
 #!/usr/bin/python3
-
+"""Calculates the fewest number of operations needed to result in exactly
+   n 'H' characters using only Copy All and Paste operations.
+   """
 
 def minOperations(n):
     if n <= 1:
