@@ -3,6 +3,7 @@
    n 'H' characters using only Copy All and Paste operations.
    """
 
+
 def minOperations(n):
     if n <= 1:
         return 0
