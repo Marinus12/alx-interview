@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-"""Script that reads stdin line by line and computes metrics"""
 import sys
 import signal
 
@@ -17,68 +16,52 @@ status_code_counts = {
 }
 line_count = 0
 
-
-def print_statistics():
-    """Print the accumulated statistics."""
+def print_stats():
+    """ Print the accumulated statistics """
     print(f"File size: {total_file_size}")
-    for code in sorted(status_code_counts):
+    for code in sorted(status_code_counts.keys()):
         if status_code_counts[code] > 0:
             print(f"{code}: {status_code_counts[code]}")
 
-
 def signal_handler(sig, frame):
-    """Handle the keyboard interruption signal (CTRL + C)."""
-    print_statistics()
+    """ Handle keyboard interruption (CTRL + C) """
+    print_stats()
     sys.exit(0)
 
-
-# Register the signal handler for keyboard interruption
+# Set the signal handler for keyboard interruption
 signal.signal(signal.SIGINT, signal_handler)
 
+# Process each line from stdin
 try:
     for line in sys.stdin:
         parts = line.split()
-
+        
         # Validate the line format
-        if len(parts) < 9:
+        if len(parts) != 9:
             continue
 
         try:
-            # Parse the relevant parts of the line
-            ip_address = parts[0]
-            date = parts[3] + " " + parts[4]
-            request = parts[5] + " " + parts[6] + " " + parts[7]
-            status_code = parts[8]
-            file_size = parts[9]
-
-            # Validate request format
-            if not (request.startswith("\"GET") and
-                    request.endswith("HTTP/1.1\"")):
-                continue
-
-            # Validate status code and file size
-            try:
-                status_code = int(status_code)
-                file_size = int(file_size)
-            except ValueError:
-                continue
-
+            # Extract relevant parts
+            file_size = int(parts[8])
+            status_code = int(parts[7])
+            
+            # Accumulate metrics
+            total_file_size += file_size
             if status_code in status_code_counts:
                 status_code_counts[status_code] += 1
-
-            total_file_size += file_size
+            
             line_count += 1
 
-            # Print statistics every 10 lines
+            # Print statistics after every 10 lines
             if line_count % 10 == 0:
-                print_statistics()
+                print_stats()
 
-        except IndexError:
+        except (ValueError, IndexError):
             continue
 
-except Exception as e:
-    print(f"An error occurred: {e}")
-
-
-# Print the final statistics if the loop ends
-print_statistics()
+except KeyboardInterrupt:
+    print_stats()
+    sys.exit(0)
+except BrokenPipeError:
+    sys.stderr.close()
+    sys.stdout.close()
