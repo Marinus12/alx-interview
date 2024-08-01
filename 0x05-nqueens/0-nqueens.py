@@ -2,6 +2,7 @@
 """N Queens Problem Solver"""
 import sys
 
+
 def print_solution(board):
     """ Print the board solution in the required format """
     solution = []
@@ -10,6 +11,7 @@ def print_solution(board):
             if board[i][j] == 1:
                 solution.append([i, j])
     print(solution)
+
 
 def is_safe(board, row, col):
     """ Check if it's safe to place a queen at board[row][col] """
@@ -24,6 +26,7 @@ def is_safe(board, row, col):
             return False
     return True
 
+
 def solve_nqueens_util(board, col):
     """ Util function to solve N Queens problem using backtracking """
     if col >= len(board):
@@ -37,10 +40,12 @@ def solve_nqueens_util(board, col):
             board[i][col] = 0
     return res
 
+
 def solve_nqueens(n):
     """ Solve N Queens problem """
     board = [[0 for _ in range(n)] for _ in range(n)]
     solve_nqueens_util(board, 0)
+
 
 def main():
     """ Main function to handle input and solve the problem """
